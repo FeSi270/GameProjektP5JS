@@ -114,3 +114,76 @@ export function handleMenuClick(mx, my, selectedModel, selectedColor) {
   return result;
 }
 
+// Default menu state for initialization
+export const defaultMenuState = {
+  focus: "car", // "car" or "color"
+  modelIdx: 0,
+  colorIdx: 0,
+  start: false
+};
+
+// Helper: get arrays for models/colors and current indices
+export function getMenuSelectionIndices(selectedModel, selectedColor) {
+  const modelKeys = Object.keys(carModels);
+  const colorList = ["white", "blue", "red", "green", "gray", "black", "purple"];
+  const modelIdx = modelKeys.indexOf(selectedModel);
+  const colorIdx = colorList.indexOf(selectedColor);
+  return { modelIdx, colorIdx, modelKeys, colorList };
+}
+
+// Helper: get model/color by indices
+export function setMenuSelectionByIndices(modelIdx, colorIdx) {
+  const modelKeys = Object.keys(carModels);
+  const colorList = ["white", "blue", "red", "green", "gray", "black", "purple"];
+  return {
+    selectedModel: modelKeys[modelIdx],
+    selectedColor: colorList[colorIdx]
+  };
+}
+
+// Enhanced menu navigation with focus state
+export function menuKeyPressed(keyCode, menuState) {
+  // menuState: {focus, modelIdx, colorIdx, start}
+  const modelKeys = Object.keys(carModels);
+  const colorList = ["white", "blue", "red", "green", "gray", "black", "purple"];
+  let { focus, modelIdx, colorIdx } = menuState;
+  let start = false;
+
+  if (focus === "car") {
+    if (keyCode === LEFT_ARROW) {
+      modelIdx = (modelIdx - 1 + modelKeys.length) % modelKeys.length;
+    } else if (keyCode === RIGHT_ARROW) {
+      modelIdx = (modelIdx + 1) % modelKeys.length;
+    } else if (keyCode === ENTER || keyCode === 32) { // 32 = Space
+      focus = "color";
+    }
+  } else if (focus === "color") {
+    if (keyCode === LEFT_ARROW || keyCode === UP_ARROW) {
+      colorIdx = (colorIdx - 1 + colorList.length) % colorList.length;
+    } else if (keyCode === RIGHT_ARROW || keyCode === DOWN_ARROW) {
+      colorIdx = (colorIdx + 1) % colorList.length;
+    } else if (keyCode === ENTER || keyCode === 32) {
+      start = true;
+    }
+  }
+
+  return {
+    focus,
+    modelIdx,
+    colorIdx,
+    start
+  };
+}
+
+// level selection locic needs to be implemented later
+
+// Utility to get selectedModel/selectedColor from menuState
+export function getMenuSelectionFromState(menuState) {
+  const modelKeys = Object.keys(carModels);
+  const colorList = ["white", "blue", "red", "green", "gray", "black", "purple"];
+  return {
+    selectedModel: modelKeys[menuState.modelIdx],
+    selectedColor: colorList[menuState.colorIdx]
+  };
+}
+

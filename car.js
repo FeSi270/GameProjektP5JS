@@ -45,7 +45,7 @@ export class Car {
     }
     this.speed = constrain(this.speed, 0, this.model.maxSpeed || 10);
 
-    // Jump (up arrow)
+    // Jump (up arrow) 
     // Limit: jump only if car is not already above terrain by more than 30
     let maxJumpHeight = terrainY - 30;
     if (

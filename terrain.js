@@ -134,7 +134,7 @@ export function getDynamicFuelConsumption(carX, baseConsumption, lastHeightObj) 
 }
 
 // Utility to pick a random terrain color scheme
-let terrainTextureIndex = 0;
+export let terrainTextureIndex = 0;
 const terrainTextures = [
   // Each entry: { ground: [r,g,b], box: [r,g,b], refuel: [r,g,b], coin: [r,g,b] }
   { ground: [60, 40, 20], box: [200, 100, 50], refuel: [255, 0, 0], coin: [255, 215, 0] },
@@ -143,8 +143,11 @@ const terrainTextures = [
   { ground: [120, 80, 40], box: [220, 180, 80], refuel: [0, 255, 180], coin: [255, 140, 0] }
 ];
 
+// Add debug log and export terrainTextureIndex for easier debugging
 export function setRandomTerrainTexture() {
   terrainTextureIndex = Math.floor(Math.random() * terrainTextures.length);
+  // Debug log to confirm function is called and index is set
+  console.log("Random terrain texture index set to:", terrainTextureIndex);
 }
 
 export function setTerrainTexture(index) {
