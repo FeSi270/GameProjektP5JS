@@ -1,35 +1,50 @@
-# 2D-Game with P5.js 
-- This is a hill racing game 
-- you can collect coins and jump over obstacles
-- the game is made with p5.js and JavaScript
-- if you can read this try to modiye the code and make it better
+#  Hill Climb Game – Development Log
 
-## requirements
-- Browser with JavaScript-Support
--  Vs code with Golive server extension 
+##  How to Launch
 
-## Using (end user)
+1. Download and install the **Live Server** extension in **VS Code**.
+2. Open the project folder in VS Code.
+3. Right-click on `index.html` and choose **"Open with Live Server"**.
 
-- run the live server extension in vs code (buttom right corner ) this will run on Local Host Port 5500
--  for the control use the arrow keys and the space bar to star the game
+---
+
+##  Current Progress
+
+###  Working Features
+
+- **Color Selection**  
+  - Currently functional  
+  - Will be separated later for modularity
+
+- **Vehicle System**  
+  - Car is displayed and responsive
+
+- **Start Button**  
+  - Initializes the game correctly
+
+- **Pedals**  
+  - Gas and brake controls functional
+
+- **Coins**  
+  - Collectable during gameplay
+
+-  **Fuel System**  
+  - Game refreshes when fuel runs out and no further distance is gained
+
+###  Terrain
+
+- Procedural generation working  
+- Will be replaced with **random level generation** in the future
+
+---
+
+##  Known Issues
+
+### Car
+
+- *(Detail the car-related issues here—e.g., "jittering on slope", "not rotating correctly", etc.)*
+
+> ⚠️ Add specifics to help with debugging.
 
 
-## Finished parts:
-- how to launch:
-- download go live server extention for vs code
-
-## Current Procress:
-
-- Color Selection Working  (Needs later to be implemented Seperate)
-- Vehicle Working
-- Start Button Working
-- Peadles Working
-- Coins
-- refreshing if fuel runs out and distance doesnt get higher
-- Working (random Generation) ( needs later to be random level generation)
-
-## Problems
-- carmodels e.g. monster truck wont jump
-
-## Ideas 
-- 
+Feel free to update this log as development progresses!
