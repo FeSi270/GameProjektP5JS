@@ -14,3 +14,22 @@
 -  for the control use the arrow keys and the space bar to star the game
 
 
+## Finished parts:
+- how to launch:
+- download go live server extention for vs code
+
+## Current Procress:
+
+- Color Selection Working  (Needs later to be implemented Seperate)
+- Vehicle Working
+- Start Button Working
+- Peadles Working
+- Coins
+- refreshing if fuel runs out and distance doesnt get higher
+- Working (random Generation) ( needs later to be random level generation)
+
+## Problems
+- carmodels e.g. monster truck wont jump
+
+## Ideas 
+- 
