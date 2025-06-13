@@ -1,7 +1,9 @@
 // homeMenu.js
 import carModels from "./carmodels.js";
 
-export function drawMenu(selectedModel, selectedColor) {
+export const LEVEL_COUNT = 10;
+
+export function drawMenu(selectedModel, selectedColor, selectedLevelIdx = 0) {
   fill(255);
   textSize(32);
   text("Hill Climb Racing - Select Car Model & Color", width / 2, 60);
@@ -39,6 +41,14 @@ export function drawMenu(selectedModel, selectedColor) {
     noStroke();
     i++;
   }
+
+  // Level selection
+  let levelText = selectedLevelIdx < LEVEL_COUNT
+    ? `Level: ${selectedLevelIdx + 1}`
+    : "Level: Infinity";
+  fill(255);
+  textSize(20);
+  text(levelText, width / 2, 260);
 
   // Start button
   fill(0, 150, 0);
@@ -116,9 +126,10 @@ export function handleMenuClick(mx, my, selectedModel, selectedColor) {
 
 // Default menu state for initialization
 export const defaultMenuState = {
-  focus: "car", // "car" or "color"
+  focus: "car", // "car", "color", or "level"
   modelIdx: 0,
   colorIdx: 0,
+  levelIdx: 0, // 0-9 for levels 1-10, 10 for infinity
   start: false
 };
 
@@ -146,7 +157,7 @@ export function menuKeyPressed(keyCode, menuState) {
   // menuState: {focus, modelIdx, colorIdx, start}
   const modelKeys = Object.keys(carModels);
   const colorList = ["white", "blue", "red", "green", "gray", "black", "purple"];
-  let { focus, modelIdx, colorIdx } = menuState;
+  let { focus, modelIdx, colorIdx, levelIdx } = menuState;
   let start = false;
 
   if (focus === "car") {
@@ -156,6 +167,8 @@ export function menuKeyPressed(keyCode, menuState) {
       modelIdx = (modelIdx + 1) % modelKeys.length;
     } else if (keyCode === ENTER || keyCode === 32) { // 32 = Space
       focus = "color";
+    } else if (keyCode === UP_ARROW) {
+      focus = "level";
     }
   } else if (focus === "color") {
     if (keyCode === LEFT_ARROW || keyCode === UP_ARROW) {
@@ -164,6 +177,20 @@ export function menuKeyPressed(keyCode, menuState) {
       colorIdx = (colorIdx + 1) % colorList.length;
     } else if (keyCode === ENTER || keyCode === 32) {
       start = true;
+    } else if (keyCode === DOWN_ARROW) {
+      focus = "level";
+    }
+  } else if (focus === "level") {
+    if (keyCode === UP_ARROW) {
+      levelIdx = (levelIdx - 1 + (LEVEL_COUNT + 1)) % (LEVEL_COUNT + 1);
+    } else if (keyCode === DOWN_ARROW) {
+      levelIdx = (levelIdx + 1) % (LEVEL_COUNT + 1);
+    } else if (keyCode === ENTER || keyCode === 32) {
+      start = true;
+    } else if (keyCode === LEFT_ARROW) {
+      focus = "car";
+    } else if (keyCode === RIGHT_ARROW) {
+      focus = "color";
     }
   }
 
@@ -171,19 +198,19 @@ export function menuKeyPressed(keyCode, menuState) {
     focus,
     modelIdx,
     colorIdx,
+    levelIdx,
     start
   };
 }
 
-// level selection locic needs to be implemented later
-
-// Utility to get selectedModel/selectedColor from menuState
+// Utility to get selectedModel/selectedColor/selectedLevel from menuState
 export function getMenuSelectionFromState(menuState) {
   const modelKeys = Object.keys(carModels);
   const colorList = ["white", "blue", "red", "green", "gray", "black", "purple"];
   return {
     selectedModel: modelKeys[menuState.modelIdx],
-    selectedColor: colorList[menuState.colorIdx]
+    selectedColor: colorList[menuState.colorIdx],
+    selectedLevelIdx: menuState.levelIdx
   };
 }
 

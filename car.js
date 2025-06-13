@@ -151,4 +151,3 @@ export class Car {
   }
 }
 
-// No duplicate or unnecessary functions found. All methods are used and unique.

@@ -7,7 +7,7 @@ import {
   menuKeyPressed,
   getMenuSelectionFromState
 } from "./homeMenu.js";
-import { initGame, extendTerrain, getTerrainYAt, getTerrainSlopeAt, drawTerrain, boxes, coins, refuelBoxes, fuel, getDistance } from "./terrain.js";
+import { initGame, extendTerrain, getTerrainYAt, getTerrainSlopeAt, drawTerrain, boxes, coins, refuelBoxes, fuel, getDistance, setTerrainSeed, setFinishLine, setTerrainThemeForLevel } from "./terrain.js";
 import { drawHUD } from "./game.js";
 
 let car;
@@ -31,8 +31,8 @@ function draw() {
 
   if (gameState === "menu") {
     // Get current selection from menuState
-    const { selectedModel, selectedColor } = getMenuSelectionFromState(menuState);
-    drawMenu(selectedModel, selectedColor);
+    const { selectedModel, selectedColor, selectedLevelIdx } = getMenuSelectionFromState(menuState);
+    drawMenu(selectedModel, selectedColor, selectedLevelIdx);
   } else if (gameState === "play") {
     console.log("Game in play state, car.x:", car?.x, "car.fuel:", car?.fuel, "typeof car.fuel:", typeof car?.fuel);
     extendTerrain(car.x);
@@ -77,7 +77,7 @@ function draw() {
 function mousePressed() {
   console.log("mousePressed() called at", mouseX, mouseY, "gameState:", gameState);
   if (gameState === "menu") {
-    const { selectedModel, selectedColor } = getMenuSelectionFromState(menuState);
+    const { selectedModel, selectedColor, selectedLevelIdx } = getMenuSelectionFromState(menuState);
     const res = handleMenuClick(mouseX, mouseY, selectedModel, selectedColor);
     // Update menuState indices if selection changed
     if (res.selectedModel) {
@@ -89,7 +89,18 @@ function mousePressed() {
       menuState.colorIdx = colorList.indexOf(res.selectedColor);
     }
     if (res.start) {
-      const { selectedModel, selectedColor } = getMenuSelectionFromState(menuState);
+      // Level logic
+      let levelSeed, finishLine;
+      if (selectedLevelIdx < 10) {
+        levelSeed = selectedLevelIdx + 1;
+        finishLine = 10000;
+      } else {
+        levelSeed = Math.floor(Math.random() * 1000000);
+        finishLine = Infinity;
+      }
+      setTerrainSeed(levelSeed);
+      setFinishLine(finishLine);
+      setTerrainThemeForLevel(selectedLevelIdx);
       car = new Car(selectedModel, selectedColor);
       initGame();
       gameState = "play";
@@ -141,7 +152,18 @@ function keyPressed() {
     const newState = menuKeyPressed(keyCode, menuState);
     // If start is triggered, start the game
     if (newState.start) {
-      const { selectedModel, selectedColor } = getMenuSelectionFromState(newState);
+      const { selectedModel, selectedColor, selectedLevelIdx } = getMenuSelectionFromState(newState);
+      let levelSeed, finishLine;
+      if (selectedLevelIdx < 10) {
+        levelSeed = selectedLevelIdx + 1;
+        finishLine = 10000;
+      } else {
+        levelSeed = Math.floor(Math.random() * 1000000);
+        finishLine = Infinity;
+      }
+      setTerrainSeed(levelSeed);
+      setFinishLine(finishLine);
+      setTerrainThemeForLevel(selectedLevelIdx);
       car = new Car(selectedModel, selectedColor);
       initGame();
       gameState = "play";

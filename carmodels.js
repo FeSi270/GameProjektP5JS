@@ -108,7 +108,7 @@ const carModels = {
     color: "green",
     size: 170,
     maxSpeed: 6,
-    fuelCapacity: 160,
+    fuelCapacity: 460,
     fuelConsumption: 0.35,
     acceleration: 0.18,
     strength: 3,
