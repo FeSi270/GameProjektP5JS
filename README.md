@@ -1,3 +1,5 @@
+Please use as source for download the repo patch_3.1
+
 #  Hill Climb Game – Development Log
 
 ##  How to Launch
