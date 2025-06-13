@@ -5,11 +5,21 @@ export let boxes = [];
 export let coins = [];
 export let refuelBoxes = [];
 let terrainSeed = 0;
-export let finishLineX = 10000;
+export let finishLineX = 0;
 export let fuel = [];
 export let distance = [];
+export let level =[];
 export function setTerrainSeed(seed) {
+
   terrainSeed = seed;
+}
+function gameLevel(seed) {
+  // function to get fixed seeds ot terrain generation and biom also bound to fix level number
+  seed=level[x];
+  if (seed === undefined) {
+    seed = seededRandom(1)(); // Default seed if not defined
+
+}
 }
 
 function seededRandom(seed) {
@@ -32,7 +42,7 @@ export function initGame() {
 
 function generateInitialTerrain() {
   // Use deterministic random for level generation
-  let rand = seededRandom(terrainSeed || 1);
+  let rand = seededRandom(terrainSeed || level);
 
   let x = 0;
   let y = height - 100;
@@ -89,6 +99,7 @@ export function getTerrainYAt(x) {
   return height;
 }
 
+
 // Helper to get terrain height at a given x (rounded to int)
 function getTerrainHeightAt(x) {
   for (let i = 1; i < terrainPoints.length; i++) {
@@ -133,49 +144,28 @@ export function getDynamicFuelConsumption(carX, baseConsumption, lastHeightObj) 
   return baseConsumption + extraPerFrame;
 }
 
-// List of terrain color themes (at least 11: 10 fixed + 1 for infinity/random)
-const terrainThemes = [
-  { ground: [60, 40, 20], box: [200, 100, 50], refuel: [255, 0, 0], coin: [255, 215, 0] },      // Level 1
-  { ground: [80, 120, 60], box: [100, 200, 100], refuel: [0, 150, 255], coin: [255, 255, 0] },   // Level 2
-  { ground: [100, 80, 120], box: [180, 80, 200], refuel: [255, 80, 80], coin: [255, 255, 100] }, // Level 3
-  { ground: [120, 80, 40], box: [220, 180, 80], refuel: [0, 255, 180], coin: [255, 140, 0] },    // Level 4
-  { ground: [40, 60, 120], box: [80, 80, 200], refuel: [255, 200, 0], coin: [255, 255, 255] },   // Level 5
-  { ground: [90, 60, 60], box: [220, 120, 120], refuel: [0, 255, 255], coin: [255, 200, 0] },    // Level 6
-  { ground: [60, 90, 60], box: [120, 220, 120], refuel: [255, 0, 255], coin: [200, 255, 0] },    // Level 7
-  { ground: [60, 60, 90], box: [120, 120, 220], refuel: [255, 128, 0], coin: [255, 0, 128] },    // Level 8
-  { ground: [120, 120, 60], box: [220, 220, 120], refuel: [0, 128, 255], coin: [128, 255, 0] },  // Level 9
-  { ground: [30, 30, 30], box: [100, 100, 100], refuel: [255, 255, 255], coin: [255, 128, 0] },  // Level 10
-  // For infinity/random: will be picked randomly from above or generated randomly
+// Utility to pick a random terrain color scheme
+let terrainTextureIndex = 0;
+const terrainTextures = [
+  // Each entry: { ground: [r,g,b], box: [r,g,b], refuel: [r,g,b], coin: [r,g,b] }
+  { ground: [60, 40, 20], box: [200, 100, 50], refuel: [255, 0, 0], coin: [255, 215, 0] },
+  { ground: [80, 120, 60], box: [100, 200, 100], refuel: [0, 150, 255], coin: [255, 255, 0] },
+  { ground: [100, 80, 120], box: [180, 80, 200], refuel: [255, 80, 80], coin: [255, 255, 100] },
+  { ground: [120, 80, 40], box: [220, 180, 80], refuel: [0, 255, 180], coin: [255, 140, 0] }
 ];
 
-// Terrain color index for drawing
-export let terrainTextureIndex = 0;
-
-// Set terrain theme for a given level index (0-9 for levels 1-10, 10 for infinity/random)
-export function setTerrainThemeForLevel(levelIdx) {
-  if (levelIdx >= 0 && levelIdx < terrainThemes.length - 1) {
-    terrainTextureIndex = levelIdx;
-  } else {
-    // For infinity/random: pick a random theme
-    terrainTextureIndex = Math.floor(Math.random() * (terrainThemes.length - 1));
-  }
-}
-
-// Add debug log and export terrainTextureIndex for easier debugging
 export function setRandomTerrainTexture() {
-  terrainTextureIndex = Math.floor(Math.random() * terrainThemes.length);
-  // Debug log to confirm function is called and index is set
-  console.log("Random terrain texture index set to:", terrainTextureIndex);
+  terrainTextureIndex = Math.floor(Math.random() * terrainTextures.length);
 }
 
 export function setTerrainTexture(index) {
-  if (index >= 0 && index < terrainThemes.length) {
+  if (index >= 0 && index < terrainTextures.length) {
     terrainTextureIndex = index;
   }
 }
 
 export function drawTerrain(camX) {
-  const tex = terrainThemes[terrainTextureIndex];
+  const tex = terrainTextures[terrainTextureIndex];
   stroke(80, 50, 20);
   strokeWeight(4);
   fill(...tex.ground);
@@ -241,8 +231,4 @@ export function stopDistanceTracking() {
 
 export function getDistanceAfterFuelEmpty() {
   return distanceAfterFuelEmpty;
-}
-
-export function setFinishLine(x) {
-  finishLineX = x;
 }

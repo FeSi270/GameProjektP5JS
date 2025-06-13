@@ -1,4 +1,4 @@
-// game.js just some information 
+// game.js
 
 export function drawHUD(car) {
   fill(0, 150);

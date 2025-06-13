@@ -1,17 +1,12 @@
 import { Car } from "./car.js";
 import carModels from "./carmodels.js";
-import {
-  drawMenu,
-  handleMenuClick,
-  defaultMenuState,
-  menuKeyPressed,
-  getMenuSelectionFromState
-} from "./homeMenu.js";
-import { initGame, extendTerrain, getTerrainYAt, getTerrainSlopeAt, drawTerrain, boxes, coins, refuelBoxes, fuel, getDistance, setTerrainSeed, setFinishLine, setTerrainThemeForLevel } from "./terrain.js";
+import { drawMenu, handleMenuClick } from "./homeMenu.js";
+import { initGame, extendTerrain, getTerrainYAt, getTerrainSlopeAt, drawTerrain, boxes, coins, refuelBoxes, fuel, getDistance } from "./terrain.js";
 import { drawHUD } from "./game.js";
 
 let car;
-let menuState = { ...defaultMenuState };
+let selectedModel = "car";
+let selectedColor = "white";
 let gameState = "menu";
 
 let lastDistance = 0;
@@ -30,9 +25,8 @@ function draw() {
   background(gameState === "menu" ? 50 : 100, 200, 255);
 
   if (gameState === "menu") {
-    // Get current selection from menuState
-    const { selectedModel, selectedColor, selectedLevelIdx } = getMenuSelectionFromState(menuState);
-    drawMenu(selectedModel, selectedColor, selectedLevelIdx);
+    console.log("Drawing menu with model:", selectedModel, "color:", selectedColor);
+    drawMenu(selectedModel, selectedColor);
   } else if (gameState === "play") {
     console.log("Game in play state, car.x:", car?.x, "car.fuel:", car?.fuel, "typeof car.fuel:", typeof car?.fuel);
     extendTerrain(car.x);
@@ -77,30 +71,12 @@ function draw() {
 function mousePressed() {
   console.log("mousePressed() called at", mouseX, mouseY, "gameState:", gameState);
   if (gameState === "menu") {
-    const { selectedModel, selectedColor, selectedLevelIdx } = getMenuSelectionFromState(menuState);
     const res = handleMenuClick(mouseX, mouseY, selectedModel, selectedColor);
-    // Update menuState indices if selection changed
-    if (res.selectedModel) {
-      const modelKeys = Object.keys(carModels);
-      menuState.modelIdx = modelKeys.indexOf(res.selectedModel);
-    }
-    if (res.selectedColor) {
-      const colorList = ["white", "blue", "red", "green", "gray", "black", "purple"];
-      menuState.colorIdx = colorList.indexOf(res.selectedColor);
-    }
+    console.log("Menu click result:", res);
+    if (res.selectedModel) selectedModel = res.selectedModel;
+    if (res.selectedColor) selectedColor = res.selectedColor;
     if (res.start) {
-      // Level logic
-      let levelSeed, finishLine;
-      if (selectedLevelIdx < 10) {
-        levelSeed = selectedLevelIdx + 1;
-        finishLine = 10000;
-      } else {
-        levelSeed = Math.floor(Math.random() * 1000000);
-        finishLine = Infinity;
-      }
-      setTerrainSeed(levelSeed);
-      setFinishLine(finishLine);
-      setTerrainThemeForLevel(selectedLevelIdx);
+      console.log("Starting game with model:", selectedModel, "color:", selectedColor);
       car = new Car(selectedModel, selectedColor);
       initGame();
       gameState = "play";
@@ -146,51 +122,21 @@ function mouseReleased() {
   }
 }
 
-// Add keyPressed for menu navigation
-function keyPressed() {
-  if (gameState === "menu") {
-    const newState = menuKeyPressed(keyCode, menuState);
-    // If start is triggered, start the game
-    if (newState.start) {
-      const { selectedModel, selectedColor, selectedLevelIdx } = getMenuSelectionFromState(newState);
-      let levelSeed, finishLine;
-      if (selectedLevelIdx < 10) {
-        levelSeed = selectedLevelIdx + 1;
-        finishLine = 10000;
-      } else {
-        levelSeed = Math.floor(Math.random() * 1000000);
-        finishLine = Infinity;
-      }
-      setTerrainSeed(levelSeed);
-      setFinishLine(finishLine);
-      setTerrainThemeForLevel(selectedLevelIdx);
-      car = new Car(selectedModel, selectedColor);
-      initGame();
-      gameState = "play";
-      return;
-    }
-    menuState = newState;
-  }
-}
-
 window.setup = setup;
 window.draw = draw;
 window.mousePressed = mousePressed;
 window.mouseReleased = mouseReleased;
-window.keyPressed = keyPressed;
 // Hilfsfunktion ans Ende der Datei:
 function checkAndRedirect(Fuel, currentDistance) {
   // Debug: always log the value to see if the function is called
   console.log("checkAndRedirect called with Fuel:", Fuel, "typeof:", typeof Fuel, "<= 0:", Fuel <= 0, "currentDistance:", currentDistance, "lastDistance:", lastDistance);
 
-  // Finish line logic
-  if (currentDistance >= 10000) {
-    car.fuel = 0;
-    window.alert("You have reached the finish line! Starting the next level...");
-    console.log("You have reached the finish line! Reloading for next level...");
-    redirect();
+  // Browser compatibility check for reload
+  if (typeof location.reload !== "function") {
+    window.alert("Error: Your browser is not supported for live updating. Please refresh the page manually.");
     return;
   }
+
   // Only trigger if fuel is <= 0 and car has stopped (distance does not increase)
   if (Fuel <= 0 && currentDistance === lastDistance) {
     if (!stoppedTimerStarted) {
@@ -208,7 +154,7 @@ function checkAndRedirect(Fuel, currentDistance) {
       // Save the distance for the timer closure
       stoppedTimerId = setTimeout(function() {
         window.alert("Hey, you are out of fuel!\nYou reached a distance of " + stoppedDistance + " meters. Please try again.");
-        redirect();
+        location.reload();
       }, 3000); // wait 3 seconds before reloading
     }
   } else {
@@ -225,16 +171,4 @@ function checkAndRedirect(Fuel, currentDistance) {
     console.log('Live reload enabled.');
     sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
   }
-}
-
-// Redirect function for browser refresh logic
-function redirect() {
-  // Browser compatibility check for reload
-  if (typeof location.reload !== "function") {
-    window.alert("Error: Your browser is not supported for live updating. Please refresh the page manually.");
-    return;
-  }
-  setTimeout(function() {
-    location.reload();
-  }, 0);
 }
